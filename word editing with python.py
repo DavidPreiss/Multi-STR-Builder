@@ -221,12 +221,42 @@ def MainMenu3():
     GenManySTRs(s_csvFile,s_docxFile)
     return
 
-def f_1_Step():
-    # this is the first step of the code
+def f_1_step():
+    # 1. change working directory to match the local directory of this script
+        # then return that directory as a string
     retval = str(pathlib.Path(__file__).parent.resolve())
-    print("Script is running from: ", retval)
+    # print("Script is running from: ", retval)
     os.chdir(retval)
     return retval
+
+def f_2_step(inputPath):
+    return
+
+def f_MainMenu(b_inputRepeat, s_inputCSV_target, s_inputDOCX_target):
+        
+    s_MainMenu = '''Main Menu - input the number
+    \t(1) Generate .csv template
+    \t(2) Generate .docx template
+    \t(3) Generate STRs from path
+    \t(4) Generate STRs from targets
+    \t(0) EXIT\n\t'''
+    while (b_inputRepeat):
+        print('Target CSV: ',s_inputCSV_target,'\nTarget DOCX: ',s_inputDOCX_target)
+        inputFirst = input(s_MainMenu)
+        match inputFirst:
+            case '0':
+                b_inputRepeat = False
+            case '1':
+                GenCSV_template()
+            case '2':
+                GenDOCX_template()
+            case '3':
+                MainMenu3()
+            case '4':
+                GenManySTRs(s_inputCSV_target, s_inputDOCX_target)
+            case _:
+                print('invalid input')
+    return
 
 ###### CODE START:
 
@@ -241,18 +271,17 @@ def f_1_Step():
 
 # 1. change working directory to match the local directory of this script #
     # getting current path and switching working directory to it
-s_thisPath = f_1_Step()
+f_1_step()
 
 # 2. scan local directory for .csv and .docx files, making a list for each #
     # also set targets on most recently scanned .csv and .docx file
-
     # Make variables for the target CSV and DOCX file
 s_CSV_target = ''
 s_DOCX_target = ''
     # Make a list of every CSV and DOCX file in the local directory
 listCSV = []
 listDOCX = []
-dir_list = os.listdir(s_thisPath)
+dir_list = os.listdir()
 
     # Populate the lists and targets
 for localfile in dir_list:
@@ -263,11 +292,13 @@ for localfile in dir_list:
         listDOCX.append(localfile)
         s_DOCX_target = localfile
 
+b_SkipMainMenu = (len(listDOCX)==1 and len(listCSV)==1)
+
 # 3. Check if exactly 1 .docx and exactly 1 .csv file detected
     # if they are, skip Main Menu make the generate the STRs using those
 
     # if there is only 1 docx file and only 1 csv file, skip the menu and immediately generate the STRs
-if (len(listDOCX)==1 and len(listCSV)==1):
+if (b_SkipMainMenu):
     b_repeat = False
     print('Target CSV: ',s_CSV_target,'\nTarget DOCX: ',s_DOCX_target)
     GenManySTRs(s_CSV_target, s_DOCX_target)
@@ -275,29 +306,7 @@ else:
     b_repeat = True
 
 # 4. if not skipped, Open the Main Menu and prompt the user for their desired action
-
-s_MainMenu = '''Main Menu - input the number
-\t(1) Generate .csv template
-\t(2) Generate .docx template
-\t(3) Generate STRs from path
-\t(4) Generate STRs from targets
-\t(0) EXIT\n\t'''
-while (b_repeat):
-    print('Target CSV: ',s_CSV_target,'\nTarget DOCX: ',s_DOCX_target)
-    inputFirst = input(s_MainMenu)
-    match inputFirst:
-        case '0':
-            b_repeat = False
-        case '1':
-            GenCSV_template()
-        case '2':
-            GenDOCX_template()
-        case '3':
-            MainMenu3()
-        case '4':
-            GenManySTRs(s_CSV_target, s_DOCX_target)
-        case _:
-            print('invalid input')
+f_MainMenu(b_repeat, s_CSV_target, s_DOCX_target)
 
 
 print("END OF SCRIPT")
