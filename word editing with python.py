@@ -5,19 +5,17 @@
 
 ###### TABLE OF CONTENTS:
 
-    # INTRODUCTION
+    # OVERVIEW
     # IMPORTS
     # FUNCTIONS
+    # CODE INTRO
     # CODE START
 
-###### INTRODUCTION:
+###### OVERVIEW:
 
 # This python script is supposed to automate the completion of STR documents
 # Run this script in a folder with exactly 1 .docx file and exactly 1 .csv file to skip the menu
 # Run under normal conditions to gain access to the menu
-# (1)generate a csv file in the format this script expects
-# (2)generate a docx file in a format this script can handle, would prefer using a normal STR docx
-# (3)run the script using absolute or relative paths for csv or docx files in other locations
 
 ###### IMPORTS:
 
@@ -192,7 +190,10 @@ def GenDOCX_template():
 
 def GenManySTRs(s_Name_of_CSV, s_readDoc):
     # This function generates a .docx for each valid test in a .csv
-    
+
+    # print Targets
+    print('Target CSV: ',s_CSV_target,'\nTarget DOCX: ',s_DOCX_target)
+
     #create a folder named after the current time and date
     s_FolderName = str(datetime.datetime.now()).replace(":","_")
     os.mkdir(s_FolderName)
@@ -204,7 +205,7 @@ def GenManySTRs(s_Name_of_CSV, s_readDoc):
 
             if (len(row)>3 and row[0]!="" and row[1]!="" and row[3]!=""):
 
-                #Open a STR docx with A and B filled in, but not C or D
+                # Open a STR docx with A and B filled in, but not C or D
                 # Fill in C with the Test Number
                 # Fill in D with Results, Name, Current Date, and anomolies
                 # save as a new Document under a new folder, named for the test
@@ -213,15 +214,17 @@ def GenManySTRs(s_Name_of_CSV, s_readDoc):
     print('Many STRs Generated')
     return
                 
-def MainMenu3():
+def SetTargets(s_inputCSV_target, s_inputDOCX_target):
     # This function prompts user for .csv and .docx filepaths to use to run GenManySTRs()
 
-    s_csvFile = input('CSV file path:')
-    s_docxFile = input('DOCX file path:')
-    GenManySTRs(s_csvFile,s_docxFile)
-    return
+    retval1 = input('Path for .csv file:\t')
+    retval2 = input('Path for .docx file:\t')
+    if (retval1[-4:]!='.csv'): retval1 = s_inputCSV_target
+    if (retval2[-5:]!='.docx'): retval2 = s_inputDOCX_target
+    retval = [retval1, retval2]
+    return retval
 
-def f_1_step():
+def PathSetup():
     # 1. change working directory to match the local directory of this script
         # then return that directory as a string
     retval = str(pathlib.Path(__file__).parent.resolve())
@@ -229,43 +232,58 @@ def f_1_step():
     os.chdir(retval)
     return retval
 
-def f_2_step(inputPath):
-    return
-
-def f_TargetFiles():
-        # Make a list of every CSV and DOCX file in the local directory
+def DetectFiles():
+    # 2. scan local directory for .csv and .docx files, making a list for each #
+        # also set targets on most recently scanned .csv and .docx file
     
-    s_CSV_input = ''
-    s_DOCX_input = ''
+        # declare variables
+    s_CSV_target = ''
+    s_DOCX_target = ''
     listCSV = []
     listDOCX = []
+
+        # create list of all local files
     dir_list = os.listdir()
 
-        # Populate the lists and targets
+        # Scan list for local .csv and .docx files
     for localfile in dir_list:
+
         if (localfile[-4:]=='.csv'):
+        # put .csv files in the .csv list
             listCSV.append(localfile)
-            s_CSV_input = localfile
+
+        # save the most recent .csv as the .csv target
+            s_CSV_target = localfile
+
         if (localfile[-5:]=='.docx'):
+        # put .docx files in the .docx list
             listDOCX.append(localfile)
-            s_DOCX_input = localfile
+
+        # save the most recent .docx as the .docx target
+            s_DOCX_target = localfile
+    
+    # 3. Check if exactly 1 .docx and exactly 1 .csv file detected
+        # if they are, skip Main Menu make the generate the STRs using those
     b_SkipMain = (len(listDOCX)==1 and len(listCSV)==1)
-    retval = [b_SkipMain, s_CSV_input, s_DOCX_input]
+
+    retval = [b_SkipMain, s_CSV_target, s_DOCX_target]
     return retval
 
-def f_MainMenu( s_inputCSV_target, s_inputDOCX_target):
+def MainMenu( s_inputCSV_target, s_inputDOCX_target):
         
+    # 4. If not skipped, open the Main Menu and prompt the user for their desired action
+
     s_MainMenu = '''Main Menu - input the number
     \t(1) Generate .csv template
     \t(2) Generate .docx template
-    \t(3) Generate STRs from path
+    \t(3) Change targets
     \t(4) Generate STRs from targets
     \t(0) EXIT\n\t'''
     b_repeat = True
     while (b_repeat):
         print('Target CSV: ',s_inputCSV_target,'\nTarget DOCX: ',s_inputDOCX_target)
-        inputFirst = input(s_MainMenu)
-        match inputFirst:
+        s_MenuChoice = input(s_MainMenu)
+        match s_MenuChoice:
             case '0':
                 b_repeat = False
             case '1':
@@ -273,62 +291,49 @@ def f_MainMenu( s_inputCSV_target, s_inputDOCX_target):
             case '2':
                 GenDOCX_template()
             case '3':
-                MainMenu3()
+                templist = SetTargets(s_inputCSV_target, s_inputDOCX_target)
+                s_inputCSV_target = templist[0]
+                s_inputDOCX_target = templist[1]
             case '4':
                 GenManySTRs(s_inputCSV_target, s_inputDOCX_target)
             case _:
                 print('invalid input')
     return
 
+###### CODE INTRO:
+
+# 1. Change working directory to match the local directory of this script
+
+# 2. Scan local directory for .csv and .docx files
+#    set targets on most recently scanned .csv and .docx file
+
+# 3. Check if exactly 1 .docx and exactly 1 .csv file detected
+#    if they are, skip Main Menu make the generate the STRs using those
+
+# 4. If not skipped, open the Main Menu and prompt the user for their desired action
+
 ###### CODE START:
 
-# 1. change working directory to match the local directory of this script
-# 2. scan local directory for .csv and .docx files, making a list for each
-    # also set targets on most recently scanned .csv and .docx file
-# 3. Check if exactly 1 .docx and exactly 1 .csv file detected
-    # if they are, skip Main Menu make the generate the STRs using those
-# 4. if not skipped, Open the Main Menu and prompt the user for their desired action
+# 1. change working directory to match the local directory of this script 
+#    getting current path and switching working directory to it
+PathSetup()
 
-######
-
-# 1. change working directory to match the local directory of this script #
-    # getting current path and switching working directory to it
-f_1_step()
-
-# 2. scan local directory for .csv and .docx files, making a list for each #
-    # also set targets on most recently scanned .csv and .docx file
-    # Make variables for the target CSV and DOCX file
-    # Make a list of every CSV and DOCX file in the local directory
-# listCSV = []
-# listDOCX = []
-# dir_list = os.listdir()
-
-#     # Populate the lists and targets
-# for localfile in dir_list:
-#     if (localfile[-4:]=='.csv'):
-#         listCSV.append(localfile)
-#         s_CSV_target = localfile
-#     if (localfile[-5:]=='.docx'):
-#         listDOCX.append(localfile)
-#         s_DOCX_target = localfile
-list_TargetFiles = f_TargetFiles()
+# 2. scan local directory for .csv and .docx files 
+#    set targets on most recently scanned .csv and .docx file
+list_TargetFiles = DetectFiles()
 
 b_SkipMainMenu = list_TargetFiles[0]
 s_CSV_target = list_TargetFiles[1]
 s_DOCX_target = list_TargetFiles[2]
 
 # 3. Check if exactly 1 .docx and exactly 1 .csv file detected
-    # if they are, skip Main Menu make the generate the STRs using those
+#    if they are, skip Main Menu make the generate the STRs using those
 
-    # if there is only 1 docx file and only 1 csv file, skip the menu and immediately generate the STRs
 if (b_SkipMainMenu):
-    print('Target CSV: ',s_CSV_target,'\nTarget DOCX: ',s_DOCX_target)
     GenManySTRs(s_CSV_target, s_DOCX_target)
 else:
-    f_MainMenu(s_CSV_target, s_DOCX_target)
 
-# 4. if not skipped, Open the Main Menu and prompt the user for their desired action
-
-
+# 4. If not skipped, open the Main Menu and prompt the user for their desired action
+    MainMenu(s_CSV_target, s_DOCX_target)
 
 print("END OF SCRIPT")
