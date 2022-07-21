@@ -4,13 +4,13 @@
 # Edited:   7/21/2022
 
 ###### TABLE OF CONTENTS:
+
     # INTRODUCTION
     # IMPORTS
     # FUNCTIONS
-    # MAIN CODE
+    # CODE START
 
 ###### INTRODUCTION:
-
 
 # This python script is supposed to automate the completion of STR documents
 # Run this script in a folder with exactly 1 .docx file and exactly 1 .csv file to skip the menu
@@ -20,7 +20,7 @@
 # (3)run the script using absolute or relative paths for csv or docx files in other locations
 
 ###### IMPORTS:
-    # Import the needed libraries for the program
+
 from docx import Document   # for opening/editing/saving docx
 import datetime             # for naming the folder
 from datetime import date   # for putting the date of the signature
@@ -28,7 +28,7 @@ import pathlib              # in case we need the path
 import csv                  # for creating/reading from the csv
 import os                   # for changing working directory
 
-###### FUNCTIONS ####
+###### FUNCTIONS:
 
 def AutoFiller_For_C_and_D(sourceFile, destinationFile, inputTest, inputResults, inputTesterName, inputDate, inputAnomalies):
     # This function accepts a 2 filepaths for an STR .docx file and the information for sections C and D,
@@ -191,58 +191,65 @@ def GenDOCX_template():
         print('ERROR! Failed to generate docx file')
 
 def GenManySTRs(s_Name_of_CSV, s_readDoc):
-
-    
-    # Generates STR for each test in a .csv
+    # This function generates a .docx for each valid test in a .csv
     
     #create a folder named after the current time and date
     s_FolderName = str(datetime.datetime.now()).replace(":","_")
     os.mkdir(s_FolderName)
 
+    # Iterate through .csv file
     with open(s_Name_of_CSV, newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in spamreader:
-
-            # print(row[3])
 
             if (row[0]!="" and row[1]!="" and row[3]!=""):
 
                 #Open a STR docx with A and B filled in, but not C or D
                 # Fill in C with the Test Number
                 # Fill in D with Results, Name, Current Date, and anomolies
-                # save as a new Document under a newfolder, named for the test
+                # save as a new Document under a new folder, named for the test
 
                 AutoFiller_For_C_and_D(s_readDoc, s_FolderName+'/'+row[0]+'.docx', row[0], row[4], row[1], row[3], row[5])
     print('Many STRs Generated')
+    return
                 
-
 def MainMenu3():
-    
-    print('you chose option 3')
+    # This function prompts user for .csv and .docx filepaths to use to run GenManySTRs()
+
     s_csvFile = input('CSV file path:')
     s_docxFile = input('DOCX file path:')
     GenManySTRs(s_csvFile,s_docxFile)
     return
 
+###### CODE START:
 
+# 1. change working directory to match the local directory of this script
+# 2. scan local directory for .csv and .docx files, making a list for each
+    # also set targets on most recently scanned .csv and .docx file
+# 3. Check if exactly 1 .docx and exactly 1 .csv file detected
+    # if they are, skip Main Menu make the generate the STRs using those
+# 4. if not skipped, Open the Main Menu and prompt the user for their desired action
 
-############### CODE START #############
+######
 
-
-# getting current path and switching working directory to it
+# 1. change working directory to match the local directory of this script #
+    # getting current path and switching working directory to it
 s_thisPath = str(pathlib.Path(__file__).parent.resolve())
 print("Script is running from: ", s_thisPath)
 os.chdir(s_thisPath)
 
-# Make variables for the target CSV and DOCX file
+# 2. scan local directory for .csv and .docx files, making a list for each #
+    # also set targets on most recently scanned .csv and .docx file
+
+    # Make variables for the target CSV and DOCX file
 s_CSV_target = ''
 s_DOCX_target = ''
-# Make a list of every CSV and DOCX file in the local directory
+    # Make a list of every CSV and DOCX file in the local directory
 listCSV = []
 listDOCX = []
 dir_list = os.listdir(s_thisPath)
 
-# Populate the lists and targets
+    # Populate the lists and targets
 for localfile in dir_list:
     if (localfile[-4:]=='.csv'):
         listCSV.append(localfile)
@@ -251,7 +258,10 @@ for localfile in dir_list:
         listDOCX.append(localfile)
         s_DOCX_target = localfile
 
-# if there is only 1 docx file and only 1 csv file, skip the menu and immediatley generate the STRs
+# 3. Check if exactly 1 .docx and exactly 1 .csv file detected
+    # if they are, skip Main Menu make the generate the STRs using those
+
+    # if there is only 1 docx file and only 1 csv file, skip the menu and immediately generate the STRs
 if (len(listDOCX)==1 and len(listCSV)==1):
     b_repeat = False
     print('Target CSV: ',s_CSV_target,'\nTarget DOCX: ',s_DOCX_target)
@@ -259,7 +269,8 @@ if (len(listDOCX)==1 and len(listCSV)==1):
 else:
     b_repeat = True
 
-# Main Menu
+# 4. if not skipped, Open the Main Menu and prompt the user for their desired action
+
 s_MainMenu = '''Main Menu - input the number
 \t(1) Generate .csv template
 \t(2) Generate .docx template
@@ -284,115 +295,4 @@ while (b_repeat):
             print('invalid input')
 
 
-# s_STR_Date_in = "s_STR_Date"
-# s_STR_Date_out = "s_STR_Date"
-# s_STR_ProjectNum = "s_STR_ProjectNum"
-# s_STR_ProjectName = "s_STR_ProjectName"
-# s_STR_ReportNum = "s_STR_ReportNum"
-# s_STR_DocNum = "s_STR_DocNum"
-# s_STR_Rev = "s_STR_Rev"
-# s_STR_DocTitle = "s_STR_DocTitle"
-
-# s_STR_TypeOfTest = "Functional Test"
-
-# S_STR_C_TestObjectives = "S_STR_C_TestObjectives"
-
-# s_STR_D_SummaryOfTestResults = "s_STR_D_SummaryOfTestResults"
-# i_STR_D_Anomalies = 0
-# def STR_Value(input):
-#     match input:
-#         case s_STR_Date_in:
-#             return s_STR_Date_out
-
-
-# download excel file of tests to local machine
-# run script
-# script creates copy of STR word document template and populates all sections that remain the same between tests to create cloneSTR
-# script reads test numbers and pass/fail from excel file
-# for each test number with a pass/fail result, script creates a copy of the cloneSTR and populates sections C and D
-
-# # STR Doc Info
-# s_STR_Date = "s_STR_Date"
-# s_STR_ProjectNum = "s_STR_ProjectNum"
-# s_STR_ProjectName = "s_STR_ProjectName"
-# s_STR_ReportNum = "s_STR_ReportNum"
-# s_STR_DocNum = "s_STR_DocNum"
-# s_STR_Rev = "s_STR_Rev"
-# s_STR_DocTitle = "s_STR_DocTitle"
-
-# s_STR_TypeOfTest = "Functional Test"
-
-# S_STR_C_TestObjectives = "S_STR_C_TestObjectives"
-
-# s_STR_D_SummaryOfTestResults = "s_STR_D_SummaryOfTestResults"
-# s_STR_D_Name = "s_STR_D_Name"
-# s_STR_D_Date = "s_STR_D_Date"
-# i_STR_D_Anomalies = 0
-
-
-
-
-# try:
-#     document = Document(s_readDoc)
-# except:
-#     print("ERROR: ",s_targetDoc," Not found, creating new file")
-#     document = Document()
-#     document.core_properties.title = s_targetDoc
-#     b_newDoc = True
-
-# i_parasize = len(document.paragraphs)
-
-# if (i_parasize<2):
-    
-#     document.add_paragraph("This is "+s_targetDoc)
-#     i_parasize += 1
-
-
-# document.tables[0].rows[2].cells[3].text = "wow"
-
-# print("\n Document name: ", document.core_properties.title)
-# print("\n Document name: ", s_targetDoc)
-# print("Number of paragraphs = ", i_parasize)
-
-# print("This is the list of paragraphs:")
-# i_thingCounter = 1
-# for thing in document.paragraphs:
-#     print("\t",i_thingCounter, " ",thing.text,"\n\t",thing)
-#     i_thingCounter += 1
-
-# def AutoFiller_For_C_and_D(sourceFile,destinationFile,inputTest,inputResults,inputTesterName,inputDate,inputAnomalies):
-#     document = Document(sourceFile)
-#     document.tables[0].rows[14].cells[0].text = inputTest
-#     document.tables[0].rows[18].cells[0].text = inputResults
-#     document.tables[0].rows[21].cells[0].text = inputTesterName
-#     document.tables[0].rows[21].cells[5].text = inputDate
-#     document.tables[0].rows[21].cells[16].text = str(inputAnomalies)
-#     document.save(destinationFile)
-
-
-# print("This is the list of rows in the first table:")
-# i_thingCounter = 1
-# for thing in document.tables[0].rows:
-#     if(i_thingCounter == 15):
-#         thing.cells[0].text = S_STR_C_TestObjectives
-#     if(i_thingCounter == 19):
-#         thing.cells[0].text = s_STR_D_SummaryOfTestResults
-#     if(i_thingCounter == 22):
-#         thing.cells[0].text = s_STR_D_Name
-#     print("\t",i_thingCounter, " ",thing.cells[0].text)
-#     i_thingCounter += 1
-
-# print("This is the list of cells in the third row:")
-# i_thingCounter = 1
-# for thing in document.tables[0].rows[21].cells:
-#     if (i_thingCounter == 6):
-#         thing.text = s_STR_D_Date
-#     if (i_thingCounter == 17):
-#         thing.text = "i_STR_D_Anomalies"
-#     print("\t",i_thingCounter, " ",thing.text)
-#     i_thingCounter += 1
-
-
-# print("about to save")
-# document.save(s_saveDoc)
 print("END OF SCRIPT")
