@@ -202,7 +202,7 @@ def GenManySTRs(s_Name_of_CSV, s_readDoc):
         spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
         for row in spamreader:
 
-            if (row[0]!="" and row[1]!="" and row[3]!=""):
+            if (len(row)>3 and row[0]!="" and row[1]!="" and row[3]!=""):
 
                 #Open a STR docx with A and B filled in, but not C or D
                 # Fill in C with the Test Number
@@ -232,7 +232,28 @@ def f_1_step():
 def f_2_step(inputPath):
     return
 
-def f_MainMenu(b_inputRepeat, s_inputCSV_target, s_inputDOCX_target):
+def f_TargetFiles():
+        # Make a list of every CSV and DOCX file in the local directory
+    
+    s_CSV_input = ''
+    s_DOCX_input = ''
+    listCSV = []
+    listDOCX = []
+    dir_list = os.listdir()
+
+        # Populate the lists and targets
+    for localfile in dir_list:
+        if (localfile[-4:]=='.csv'):
+            listCSV.append(localfile)
+            s_CSV_input = localfile
+        if (localfile[-5:]=='.docx'):
+            listDOCX.append(localfile)
+            s_DOCX_input = localfile
+    b_SkipMain = (len(listDOCX)==1 and len(listCSV)==1)
+    retval = [b_SkipMain, s_CSV_input, s_DOCX_input]
+    return retval
+
+def f_MainMenu( s_inputCSV_target, s_inputDOCX_target):
         
     s_MainMenu = '''Main Menu - input the number
     \t(1) Generate .csv template
@@ -240,12 +261,13 @@ def f_MainMenu(b_inputRepeat, s_inputCSV_target, s_inputDOCX_target):
     \t(3) Generate STRs from path
     \t(4) Generate STRs from targets
     \t(0) EXIT\n\t'''
-    while (b_inputRepeat):
+    b_repeat = True
+    while (b_repeat):
         print('Target CSV: ',s_inputCSV_target,'\nTarget DOCX: ',s_inputDOCX_target)
         inputFirst = input(s_MainMenu)
         match inputFirst:
             case '0':
-                b_inputRepeat = False
+                b_repeat = False
             case '1':
                 GenCSV_template()
             case '2':
@@ -276,37 +298,37 @@ f_1_step()
 # 2. scan local directory for .csv and .docx files, making a list for each #
     # also set targets on most recently scanned .csv and .docx file
     # Make variables for the target CSV and DOCX file
-s_CSV_target = ''
-s_DOCX_target = ''
     # Make a list of every CSV and DOCX file in the local directory
-listCSV = []
-listDOCX = []
-dir_list = os.listdir()
+# listCSV = []
+# listDOCX = []
+# dir_list = os.listdir()
 
-    # Populate the lists and targets
-for localfile in dir_list:
-    if (localfile[-4:]=='.csv'):
-        listCSV.append(localfile)
-        s_CSV_target = localfile
-    if (localfile[-5:]=='.docx'):
-        listDOCX.append(localfile)
-        s_DOCX_target = localfile
+#     # Populate the lists and targets
+# for localfile in dir_list:
+#     if (localfile[-4:]=='.csv'):
+#         listCSV.append(localfile)
+#         s_CSV_target = localfile
+#     if (localfile[-5:]=='.docx'):
+#         listDOCX.append(localfile)
+#         s_DOCX_target = localfile
+list_TargetFiles = f_TargetFiles()
 
-b_SkipMainMenu = (len(listDOCX)==1 and len(listCSV)==1)
+b_SkipMainMenu = list_TargetFiles[0]
+s_CSV_target = list_TargetFiles[1]
+s_DOCX_target = list_TargetFiles[2]
 
 # 3. Check if exactly 1 .docx and exactly 1 .csv file detected
     # if they are, skip Main Menu make the generate the STRs using those
 
     # if there is only 1 docx file and only 1 csv file, skip the menu and immediately generate the STRs
 if (b_SkipMainMenu):
-    b_repeat = False
     print('Target CSV: ',s_CSV_target,'\nTarget DOCX: ',s_DOCX_target)
     GenManySTRs(s_CSV_target, s_DOCX_target)
 else:
-    b_repeat = True
+    f_MainMenu(s_CSV_target, s_DOCX_target)
 
 # 4. if not skipped, Open the Main Menu and prompt the user for their desired action
-f_MainMenu(b_repeat, s_CSV_target, s_DOCX_target)
+
 
 
 print("END OF SCRIPT")
