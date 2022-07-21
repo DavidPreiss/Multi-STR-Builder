@@ -221,6 +221,13 @@ def MainMenu3():
     GenManySTRs(s_csvFile,s_docxFile)
     return
 
+def f_1_Step():
+    # this is the first step of the code
+    retval = str(pathlib.Path(__file__).parent.resolve())
+    print("Script is running from: ", retval)
+    os.chdir(retval)
+    return retval
+
 ###### CODE START:
 
 # 1. change working directory to match the local directory of this script
@@ -234,9 +241,7 @@ def MainMenu3():
 
 # 1. change working directory to match the local directory of this script #
     # getting current path and switching working directory to it
-s_thisPath = str(pathlib.Path(__file__).parent.resolve())
-print("Script is running from: ", s_thisPath)
-os.chdir(s_thisPath)
+s_thisPath = f_1_Step()
 
 # 2. scan local directory for .csv and .docx files, making a list for each #
     # also set targets on most recently scanned .csv and .docx file
