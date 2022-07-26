@@ -19,13 +19,18 @@
 
 ###### IMPORTS:
 
-from docx import Document   # for opening/editing/saving docx
+
+import os                   # for changing working directory
+try:
+    from docx import Document   # for opening/editing/saving docx
+except:
+    os.system("pip install python-docx")
 import datetime             # for naming the folder
 from datetime import date   # for putting the date of the signature
 import pathlib              # in case we need the path
 import csv                  # for creating/reading from the csv
-import os                   # for changing working directory
 
+os.system("echo Hello from the other side!")
 ###### FUNCTIONS:
 
 def AutoFiller_For_C_and_D(sourceFile, destinationFile, inputTest, inputResults, inputTesterName, inputDate, inputAnomalies):
