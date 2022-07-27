@@ -32,7 +32,6 @@ from datetime import date   # for putting the date of the signature
 import pathlib              # in case we need the path
 import csv                  # for creating/reading from the csv
 
-os.system("echo Hello from the other side!")
 ###### FUNCTIONS:
 
 def AutoFiller(sourceFile, destinationFile, inputTest, inputResults, inputTesterName, inputDate, inputAnomalies, i_ReportNum):
