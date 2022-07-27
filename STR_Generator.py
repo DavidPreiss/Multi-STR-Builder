@@ -25,6 +25,7 @@ try:
     from docx import Document   # for opening/editing/saving docx
 except:
     os.system("pip install python-docx")
+    from docx import Document
 import datetime             # for naming the folder
 from datetime import date   # for putting the date of the signature
 import pathlib              # in case we need the path
